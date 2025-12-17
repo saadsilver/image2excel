@@ -1,5 +1,6 @@
 # 📦 Standard library
 import os
+import sys
 import io
 import re
 import zipfile
@@ -436,6 +437,18 @@ def process_image(image):
         return None, f"Erreur lors du traitement: {str(e)}"
 def main():
     st.title("Extracteur de tableaux depuis PDF ou Image")
+
+    with st.expander("🔍 Diagnostic Debug Info", expanded=False):
+        st.write(f"CWD: {os.getcwd()}")
+        st.write(f"Python: {sys.executable}")
+        st.write(f"Tesseract CMD: {pytesseract.pytesseract.tesseract_cmd}")
+        st.write(f"Exists? {os.path.exists(pytesseract.pytesseract.tesseract_cmd)}")
+        try:
+            import subprocess
+            res = subprocess.run([pytesseract.pytesseract.tesseract_cmd, "--version"], capture_output=True, text=True)
+            st.code(res.stdout)
+        except Exception as e:
+            st.error(f"Execution failed: {e}")
 
     uploaded_file = st.file_uploader(
         "Uploader un fichier (PDF ou Image)",
