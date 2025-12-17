@@ -7,3 +7,6 @@ pandas
 matplotlib
 streamlit
 openpyxl
+poppler-utils
+tesseract-ocr
+libtesseract-dev
