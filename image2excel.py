@@ -47,7 +47,7 @@ if os.name == 'nt':  # Configuration Windows
         print("⚠️ Tesseract non trouvé dans les dossiers standards. Assurez-vous qu'il est installé et dans le PATH.")
 else:
     # Linux / Streamlit Cloud : Tesseract est généralement dans le PATH
-    pass
+    pytesseract.pytesseract.tesseract_cmd = "tesseract"
 
 # Configuration de la page Streamlit
 st.set_page_config(
@@ -439,6 +439,7 @@ def main():
     st.title("Extracteur de tableaux depuis PDF ou Image")
 
     with st.expander("🔍 Diagnostic Debug Info", expanded=False):
+        st.write(f"OS Name: {os.name}")
         st.write(f"CWD: {os.getcwd()}")
         st.write(f"Python: {sys.executable}")
         st.write(f"Tesseract CMD: {pytesseract.pytesseract.tesseract_cmd}")
