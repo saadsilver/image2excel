@@ -40,8 +40,8 @@ if os.name == 'nt':  # Configuration Windows
     
     if tesseract_path:
         pytesseract.pytesseract.tesseract_cmd = tesseract_path
-        tessdata_dir = os.path.dirname(tesseract_path)
-        os.environ["TESSDATA_PREFIX"] = os.path.join(tessdata_dir, "tessdata")
+        # On laisse Tesseract trouver son dossier tessdata tout seul
+        # (souvent plus fiable que de forcer la variable d'environnement sur Windows)
     else:
         # Si non trouvé, on espère qu'il est dans le PATH, sinon afficher un warning
         print("⚠️ Tesseract non trouvé dans les dossiers standards. Assurez-vous qu'il est installé et dans le PATH.")
@@ -465,6 +465,15 @@ def main():
             st.code(res.stdout)
         except Exception as e:
             st.error(f"Execution failed: {e}")
+            
+        if os.name == 'nt' and pytesseract.pytesseract.tesseract_cmd:
+            tess_dir = os.path.dirname(pytesseract.pytesseract.tesseract_cmd)
+            tessdata = os.path.join(tess_dir, "tessdata")
+            if os.path.exists(tessdata):
+                st.write(f"📂 Tessdata found: {tessdata}")
+                st.write(f"Files: {os.listdir(tessdata)}")
+            else:
+                st.warning(f"❌ Tessdata NOT found at: {tessdata}")
 
     uploaded_file = st.file_uploader(
         "Uploader un fichier (PDF ou Image)",
