@@ -48,6 +48,9 @@ if os.name == 'nt':  # Configuration Windows
 else:
     # Linux / Streamlit Cloud : Tesseract est généralement dans le PATH
     pytesseract.pytesseract.tesseract_cmd = "tesseract"
+    # Nettoyage préventif : on s'assure qu'aucune variable d'environnement Windows ne traîne
+    if "TESSDATA_PREFIX" in os.environ:
+        del os.environ["TESSDATA_PREFIX"]
 
 # Configuration de la page Streamlit
 st.set_page_config(
@@ -458,6 +461,7 @@ def main():
         st.write(f"CWD: {os.getcwd()}")
         st.write(f"Python: {sys.executable}")
         st.write(f"Tesseract CMD: {pytesseract.pytesseract.tesseract_cmd}")
+        st.write(f"TESSDATA_PREFIX: {os.environ.get('TESSDATA_PREFIX', 'Not Set')}")
         st.write(f"Exists? {os.path.exists(pytesseract.pytesseract.tesseract_cmd)}")
         try:
             import subprocess
