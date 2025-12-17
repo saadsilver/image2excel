@@ -374,7 +374,22 @@ def process_image(image):
         _, ocr_binary = cv2.threshold(ocr_image, 160, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
 
         # Configuration : psm 6 pour un bloc de texte uniforme
-        config = "--psm 6 -l fra+eng --oem 3"
+        # Détection dynamique des langues disponibles
+        try:
+            available_langs = pytesseract.get_languages(config='')
+        except:
+            available_langs = []
+        
+        langs_to_use = []
+        if 'fra' in available_langs:
+            langs_to_use.append('fra')
+        if 'eng' in available_langs:
+            langs_to_use.append('eng')
+            
+        # Fallback si aucune langue détectée ou préférée n'est trouvée
+        lang_config = "+".join(langs_to_use) if langs_to_use else "eng"
+        
+        config = f"--psm 6 -l {lang_config} --oem 3"
         
         # Récupère les données détaillées (mots avec coordonnées)
         data = pytesseract.image_to_data(ocr_binary, config=config, output_type=pytesseract.Output.DICT)
