@@ -25,12 +25,27 @@ import streamlit as st
 
 
 # Configuration Tesseract
-try:
-    # Essayer la configuration Windows
-    pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
-    os.environ["TESSDATA_PREFIX"] = r"C:\Program Files\Tesseract-OCR\tessdata"
-except:
-    # Configuration par défaut pour Linux/Mac
+if os.name == 'nt':  # Configuration Windows
+    possible_paths = [
+        r"C:\Program Files\Tesseract-OCR\tesseract.exe",
+        r"C:\Program Files (x86)\Tesseract-OCR\tesseract.exe",
+        os.path.join(os.getenv('LOCALAPPDATA', ''), r"Tesseract-OCR\tesseract.exe")
+    ]
+    tesseract_path = None
+    for path in possible_paths:
+        if os.path.exists(path):
+            tesseract_path = path
+            break
+    
+    if tesseract_path:
+        pytesseract.pytesseract.tesseract_cmd = tesseract_path
+        tessdata_dir = os.path.dirname(tesseract_path)
+        os.environ["TESSDATA_PREFIX"] = os.path.join(tessdata_dir, "tessdata")
+    else:
+        # Si non trouvé, on espère qu'il est dans le PATH, sinon afficher un warning
+        print("⚠️ Tesseract non trouvé dans les dossiers standards. Assurez-vous qu'il est installé et dans le PATH.")
+else:
+    # Linux / Streamlit Cloud : Tesseract est généralement dans le PATH
     pass
 
 # Configuration de la page Streamlit
